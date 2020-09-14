@@ -1,5 +1,7 @@
 package com.example.demo.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +24,8 @@ public class UserController {
 	
 	@Autowired
 	private UserRepository userRepository;
+
+	public static final Logger log = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	private BCryptPasswordEncoder bcryptPasswordEncoder;
