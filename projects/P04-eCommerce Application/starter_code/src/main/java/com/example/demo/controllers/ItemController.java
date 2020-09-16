@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import java.util.List;
 
+import com.example.demo.model.persistence.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class ItemController {
 
 	@Autowired
 	private ItemRepository itemRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 	
 	@GetMapping
 	public ResponseEntity<List<Item>> getItems() {
