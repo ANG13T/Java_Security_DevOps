@@ -1,6 +1,6 @@
 package com.example.demo.controllers;
 
-import com.example.demo.loggers.CSVLogger;
+import com.example.demo.logging.CsvLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +25,7 @@ public class UserController {
 	private UserRepository userRepository;
 
 	@Autowired
-	private CSVLogger csvLogger;
+	private CsvLogger csvLogger;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;

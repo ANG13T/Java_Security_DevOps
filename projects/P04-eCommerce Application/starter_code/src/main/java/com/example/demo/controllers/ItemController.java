@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.demo.model.persistence.repositories.UserRepository;
-import com.example.demo.loggers.CSVLogger;
+import com.example.demo.logging.CsvLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ import com.example.demo.model.persistence.repositories.ItemRepository;
 public class ItemController {
 
 	@Autowired
-	private CSVLogger csvLogger;
+	private CsvLogger csvLogger;
 
 	@Autowired
 	private ItemRepository itemRepository;
@@ -37,7 +37,7 @@ public class ItemController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Item> getItemById(@PathVariable Long id) {
 		Optional<Item> item = itemRepository.findById(id);
-		csvLogger.logToCsv(null,"getItemById", null, item.get().getId(), "Successfully fetched item by id " + id, "success");
+		csvLogger.logToCsv(null,"getItemById", "Item", item.get().getId(), "Get item by id", "success");
 		return ResponseEntity.of(item);
 	}
 	

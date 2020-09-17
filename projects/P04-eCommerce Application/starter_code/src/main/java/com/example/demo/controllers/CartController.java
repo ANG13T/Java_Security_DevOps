@@ -3,7 +3,7 @@ package com.example.demo.controllers;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import com.example.demo.loggers.CSVLogger;
+import com.example.demo.logging.CsvLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import com.example.demo.model.requests.ModifyCartRequest;
 public class CartController {
 
 	@Autowired
-	private CSVLogger csvLogger;
+	private CsvLogger csvLogger;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -40,7 +40,9 @@ public class CartController {
 	public ResponseEntity<Cart> addTocart(@RequestBody ModifyCartRequest request) {
 		User user = userRepository.findByUsername(request.getUsername());
 		if(user == null) {
-			csvLogger.logToCsv(null,"addTocart", null, null, "Couldn't find user" , "notFound");
+			System.out.println("logger");
+			System.out.println(csvLogger);
+			csvLogger.logToCsv(user.getId(),"addTocart", "items", request.getItemId(), "Couldn't find user" , "notFound");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
@@ -49,6 +51,7 @@ public class CartController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
+		System.out.println("Adding to cart....");
 		IntStream.range(0, request.getQuantity())
 			.forEach(i -> {
 				cart.addItem(item.get());
@@ -62,7 +65,7 @@ public class CartController {
 	public ResponseEntity<Cart> removeFromcart(@RequestBody ModifyCartRequest request) {
 		User user = userRepository.findByUsername(request.getUsername());
 		if(user == null) {
-			csvLogger.logToCsv(null,"removeFromcart", null, null, "Couldn't find user  " , "notFound");
+			csvLogger.logToCsv(user.getId(),"removeFromcart", null, null, "Couldn't find user  " , "notFound");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());

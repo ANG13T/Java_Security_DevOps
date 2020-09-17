@@ -1,4 +1,4 @@
-package controllers;
+package com.example.demo.controllers;
 
 import com.example.demo.TestUtils;
 import com.example.demo.controllers.CartController;
