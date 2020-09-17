@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
-import com.example.demo.logging.CsvLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,8 +25,7 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private CsvLogger csvLogger;
+	Logger logger = LogManager.getLogger();
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -35,14 +35,14 @@ public class UserController {
 
 	@GetMapping("/id/{id}")
 	public ResponseEntity<User> findById(@PathVariable Long id) {
-		csvLogger.logToCsv(id,"findById", null, null, "Successfully found user witj id" + id , "success");
+		logger.info("findById", "Successfully found user witj id" + id, "Success");
 		return ResponseEntity.of(userRepository.findById(id));
 	}
 	
 	@GetMapping("/{username}")
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
-		csvLogger.logToCsv(null,"findByUserName", null, null, "Couldn't find user with name  " + user.getUsername() , "notFound");
+		logger.info("findByUserName", "Couldn't find user with username  " + username, "NotFound");
 		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
 	}
 	
@@ -54,14 +54,14 @@ public class UserController {
 		cartRepository.save(cart);
 		user.setCart(cart);
 		if(createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())){
-			csvLogger.logToCsv(null,"createUser", null, null, "Couldn't create user with password  " + createUserRequest.getPassword() , "Couldn't Create");
+			logger.info("submit", "Couldn't create user with password  " + createUserRequest.getPassword(), "Couldn't Create");
 			return ResponseEntity.badRequest().build();
 		}
 
 		System.out.println(createUserRequest.getPassword());
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 		userRepository.save(user);
-		csvLogger.logToCsv(user.getId(),"createUser", null, null, "Successfully created user " + user.getUsername() , "success");
+		logger.info("createUser", "Successfully created user", "Success");
 		return ResponseEntity.ok(user);
 	}
 	

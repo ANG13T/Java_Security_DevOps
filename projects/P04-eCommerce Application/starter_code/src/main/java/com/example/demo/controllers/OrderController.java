@@ -2,7 +2,8 @@ package com.example.demo.controllers;
 
 import java.util.List;
 
-import com.example.demo.logging.CsvLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,20 +27,19 @@ public class OrderController {
 	@Autowired
 	private OrderRepository orderRepository;
 
-	@Autowired
-	private CsvLogger csvLogger;
+	Logger logger = LogManager.getLogger();
 	
 	
 	@PostMapping("/submit/{username}")
 	public ResponseEntity<UserOrder> submit(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
 		if(user == null) {
-			csvLogger.logToCsv(null,"submit", null, null, "Couldn't find user with username  " + username , "notFound");
+			logger.info("submit", "Couldn't find user with username  " + username, "NotFound");
 			return ResponseEntity.notFound().build();
 		}
 		UserOrder order = UserOrder.createFromCart(user.getCart());
 		orderRepository.save(order);
-		csvLogger.logToCsv(order.getId(),"submit", null, null, "Successfully submitted order" + order.getId() , "success");
+		logger.info("submit", "Successfully submitted order" + order.getId(), "Success");
 		return ResponseEntity.ok(order);
 	}
 	
@@ -47,10 +47,10 @@ public class OrderController {
 	public ResponseEntity<List<UserOrder>> getOrdersForUser(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
 		if(user == null) {
-			csvLogger.logToCsv(null,"getOrdersForUser", null, null, "Couldn't get orders for  " + username , "notFound");
+			logger.info("getOrdersForUser", "Couldn't find user with username  " + username, "NotFound");
 			return ResponseEntity.notFound().build();
 		}
-		csvLogger.logToCsv(user.getId(),"getOrdersForUser", null, null, "Successfully got orders for " + username , "success");
+		logger.info("getOrdersForUser", "Successfully got orders for " + username, "Success");
 		return ResponseEntity.ok(orderRepository.findByUser(user));
 	}
 }
