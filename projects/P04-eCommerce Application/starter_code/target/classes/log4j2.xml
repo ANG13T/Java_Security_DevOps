@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="csvLog.fileName">csvLog</Property>
+        <Property name="file-header">datetime, userId, action, item, itemid, message, status</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %m%n</Property>
+    </Properties>
+
+    <Filters>
+        <MarkerFilter marker="CSV" onMatch="ACCEPT" onMismatch="DENY"/>
+    </Filters>
+
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <RollingFile name="csvFile"
+                     fileName="${csvLog.fileName}.csv"
+                     filePattern="${csvLog.filename}-%d{MM-dd-yyyy}-%i.csv" >
+            <CsvParameterLayout delimiter="," header="${file-header}\n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.example.demo" additive="false" level="debug" >
+            <AppenderRef ref="csvFile"/>
+        </Logger>
+
+        <Root level="error" additivity="false">
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers>
+</Configuration>

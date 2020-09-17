@@ -42,6 +42,7 @@ public class JWTAuthenticationVerificationFilter extends BasicAuthenticationFilt
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
+        System.out.println("getAuthentication");
         String token = request.getHeader(HEADER_STRING);
         if (token != null) {
             // parse the token.

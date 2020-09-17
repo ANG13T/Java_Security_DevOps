@@ -1,10 +1,10 @@
 package com.example.demo.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.demo.model.persistence.repositories.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.demo.loggers.CSVLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,8 @@ import com.example.demo.model.persistence.repositories.ItemRepository;
 @RequestMapping("/api/item")
 public class ItemController {
 
-	public static final Logger log = LoggerFactory.getLogger(ItemController.class);
+	@Autowired
+	private CSVLogger csvLogger;
 
 	@Autowired
 	private ItemRepository itemRepository;
@@ -29,20 +30,21 @@ public class ItemController {
 	
 	@GetMapping
 	public ResponseEntity<List<Item>> getItems() {
-		log.info("Fetched items");
+		csvLogger.logToCsv(null,"getItems", null, null, "Successfully fetched items", "success");
 		return ResponseEntity.ok(itemRepository.findAll());
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Item> getItemById(@PathVariable Long id) {
-		log.info("Got item by id", id);
-		return ResponseEntity.of(itemRepository.findById(id));
+		Optional<Item> item = itemRepository.findById(id);
+		csvLogger.logToCsv(null,"getItemById", null, item.get().getId(), "Successfully fetched item by id " + id, "success");
+		return ResponseEntity.of(item);
 	}
 	
 	@GetMapping("/name/{name}")
 	public ResponseEntity<List<Item>> getItemsByName(@PathVariable String name) {
 		List<Item> items = itemRepository.findByName(name);
-		log.info("Got items by name", name);
+		csvLogger.logToCsv(null,"getItemsByName", null, null, "Successfully fetched items by name " + name, "success");
 		return items == null || items.isEmpty() ? ResponseEntity.notFound().build()
 				: ResponseEntity.ok(items);
 			

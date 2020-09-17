@@ -2,6 +2,7 @@ package com.example.demo.security;
 
 import com.example.demo.model.persistence.User;
 import com.example.demo.model.persistence.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,15 +12,14 @@ import static java.util.Collections.emptyList;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private UserRepository applicationUserRepository;
 
-    public UserDetailsServiceImpl(UserRepository applicationUserRepository) {
-        this.applicationUserRepository = applicationUserRepository;
-    }
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User applicationUser = applicationUserRepository.findByUsername(username);
+        User applicationUser = userRepository.findByUsername(username);
         if (applicationUser == null) {
             throw new UsernameNotFoundException(username);
         }

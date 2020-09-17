@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.demo.loggers.CSVLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +24,8 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 
-	public static final Logger log = LoggerFactory.getLogger(UserController.class);
+	@Autowired
+	private CSVLogger csvLogger;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -35,14 +35,14 @@ public class UserController {
 
 	@GetMapping("/id/{id}")
 	public ResponseEntity<User> findById(@PathVariable Long id) {
-		log.info("Found user by id", id);
+		csvLogger.logToCsv(id,"findById", null, null, "Successfully found user witj id" + id , "success");
 		return ResponseEntity.of(userRepository.findById(id));
 	}
 	
 	@GetMapping("/{username}")
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
-		log.info("Found user by username", user.getUsername());
+		csvLogger.logToCsv(null,"findByUserName", null, null, "Couldn't find user with name  " + user.getUsername() , "notFound");
 		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
 	}
 	
@@ -54,14 +54,14 @@ public class UserController {
 		cartRepository.save(cart);
 		user.setCart(cart);
 		if(createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())){
-			log.error("Error with password. Cannot create user {}", createUserRequest.getUsername());
+			csvLogger.logToCsv(null,"createUser", null, null, "Couldn't create user with password  " + createUserRequest.getPassword() , "Couldn't Create");
 			return ResponseEntity.badRequest().build();
 		}
 
 		System.out.println(createUserRequest.getPassword());
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 		userRepository.save(user);
-		log.info("Successfully created user", user.getId());
+		csvLogger.logToCsv(user.getId(),"createUser", null, null, "Successfully created user " + user.getUsername() , "success");
 		return ResponseEntity.ok(user);
 	}
 	

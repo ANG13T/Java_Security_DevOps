@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.loggers.CSVLogger;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.springframework.boot.SpringApplication;
@@ -26,5 +27,9 @@ public class SareetaApplication {
 		SpringApplication.run(SareetaApplication.class, args);
 	}
 
+	@Bean
+	public CSVLogger getLogger() {
+		return new CSVLogger();
+	}
 
 }
