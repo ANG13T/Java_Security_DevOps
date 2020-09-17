@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import com.example.demo.logging.CsvLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +26,7 @@ import com.example.demo.model.requests.ModifyCartRequest;
 @RequestMapping("/api/cart")
 public class CartController {
 
-	@Autowired
-	private CsvLogger csvLogger;
+	Logger logger = LogManager.getLogger();
 
 	@Autowired
 	private UserRepository userRepository;
@@ -41,13 +42,13 @@ public class CartController {
 		User user = userRepository.findByUsername(request.getUsername());
 		if(user == null) {
 			System.out.println("logger");
-			System.out.println(csvLogger);
-			csvLogger.logToCsv(user.getId(),"addTocart", "items", request.getItemId(), "Couldn't find user" , "notFound");
+			System.out.println(logger);
+			logger.info("addTocart", "User is null", "NotFound");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
 		if(!item.isPresent()) {
-			csvLogger.logToCsv(user.getId(),"addTocart", null, null, "Could not find specific item" + request.getItemId() , "notFound");
+			logger.info("addTocart", "Item not found with id" + request.getItemId(), "NotFound");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
@@ -55,7 +56,7 @@ public class CartController {
 		IntStream.range(0, request.getQuantity())
 			.forEach(i -> {
 				cart.addItem(item.get());
-				csvLogger.logToCsv(user.getId(),"addTocart", item.get().toString(), item.get().getId(), "Saved item to cart " + item.get().getName(), "success");
+				logger.info("addTocart", "Item added to cart" + item.get().getName(), "Success");
 			});
 		cartRepository.save(cart);
 		return ResponseEntity.ok(cart);
@@ -65,19 +66,19 @@ public class CartController {
 	public ResponseEntity<Cart> removeFromcart(@RequestBody ModifyCartRequest request) {
 		User user = userRepository.findByUsername(request.getUsername());
 		if(user == null) {
-			csvLogger.logToCsv(user.getId(),"removeFromcart", null, null, "Couldn't find user  " , "notFound");
+			logger.info("removeFromcart", "User is null", "NotFound");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
 		if(!item.isPresent()) {
-			csvLogger.logToCsv(user.getId(),"removeFromcart", null, null, "Could not find specific item" + request.getItemId() , "notFound");
+			logger.info("removeFromcart", "Item not found with id" + request.getItemId(), "NotFound");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
 		IntStream.range(0, request.getQuantity())
 			.forEach(i -> {
 				cart.removeItem(item.get());
-				csvLogger.logToCsv(user.getId(),"removeFromcart", item.get().toString(), item.get().getId(), "Removed item from cart " + item.get().getName(), "success");
+				logger.info("removeFromcart", "Item removed to cart" + item.get().getName(), "Success");
 			});
 		cartRepository.save(cart);
 
