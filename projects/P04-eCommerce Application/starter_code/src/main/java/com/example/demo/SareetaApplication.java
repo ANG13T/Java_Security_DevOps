@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.logging.CsvLogger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -14,11 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class SareetaApplication {
 
-	@Bean
-	public CsvLogger getLogger() {
-		System.out.println("initialized logger");
-		return new CsvLogger();
-	}
 
 	@Bean
 	public BCryptPasswordEncoder bcryptPasswordEncoder(){
